@@ -15,13 +15,33 @@ import session from "express-session";
 const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz"
 mongoose.connect(CONNECTION_STRING);
 
-
 const app = express();
 
-//  Configure CORS FIRST
+// Configure CORS to accept multiple origins
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+  // Add regex pattern to match all Vercel preview URLs for a6 branch
+].filter(Boolean);
+
 app.use(cors({
-  credentials: true,
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Allow any Vercel preview URL for a6 branch
+    if (origin.includes('kambaz-next') && origin.includes('bhanuharshays-projects.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
 }));
 
 // Configure session SECOND
@@ -40,10 +60,10 @@ if (process.env.SERVER_ENV !== "development") {
 }
 app.use(session(sessionOptions));
 
-//  Configure JSON parsing THIRD
+// Configure JSON parsing THIRD
 app.use(express.json());
 
-//  Register routes LAST 
+// Register routes LAST 
 UserRoutes(app, db);
 CourseRoutes(app, db);
 EnrollmentRoutes(app, db);
@@ -51,7 +71,6 @@ ModulesRoutes(app, db);
 AssignmentsRoutes(app, db);
 Lab5(app);
 
-
-app.listen(4000, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log("Server running on http://localhost:4000");
 });
