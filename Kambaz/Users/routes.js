@@ -107,7 +107,7 @@ export default function UserRoutes(app) {
     res.json(currentUser);
   };
 
-  // REGISTER ROUTES
+
   app.post("/api/users/signup", signup);
   app.post("/api/users/signin", signin);
   app.post("/api/users/signout", signout);
