@@ -9,7 +9,8 @@ import CourseRoutes from "./Kambaz/Courses/routes.js";
 import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 import ModulesRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentsRoutes from "./Kambaz/Assignments/routes.js";
-
+import QuizRoutes from "./Kambaz/Quizzes/routes.js";
+import QuizAttemptRoutes from "./Kambaz/QuizAttempts/routes.js";
 
 import "dotenv/config";
 import session from "express-session";
@@ -71,6 +72,8 @@ CourseRoutes(app, db);
 EnrollmentRoutes(app, db);
 ModulesRoutes(app, db);
 AssignmentsRoutes(app, db);
+QuizRoutes(app);
+QuizAttemptRoutes(app);
 Hello(app);
 Lab5(app);
 
