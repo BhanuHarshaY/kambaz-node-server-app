@@ -36,9 +36,9 @@ export default function QuizRoutes(app) {
     const { courseId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    // Only faculty can create quizzes
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can create quizzes" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can create quizzes" });
       return;
     }
     
@@ -56,8 +56,9 @@ export default function QuizRoutes(app) {
     const { quizId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can update quizzes" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can update quizzes" });
       return;
     }
     
@@ -70,8 +71,9 @@ export default function QuizRoutes(app) {
     const { quizId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can delete quizzes" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can delete quizzes" });
       return;
     }
     
@@ -85,8 +87,9 @@ export default function QuizRoutes(app) {
     const { published } = req.body;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can publish quizzes" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can publish quizzes" });
       return;
     }
     
@@ -99,8 +102,9 @@ export default function QuizRoutes(app) {
     const { quizId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can add questions" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can add questions" });
       return;
     }
     
@@ -117,8 +121,9 @@ export default function QuizRoutes(app) {
     const { quizId, questionId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can update questions" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can update questions" });
       return;
     }
     
@@ -135,8 +140,9 @@ export default function QuizRoutes(app) {
     const { quizId, questionId } = req.params;
     const currentUser = req.session["currentUser"];
     
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ error: "Only faculty can delete questions" });
+    //  Allow FACULTY or TA
+    if (!currentUser || (currentUser.role !== "FACULTY" && currentUser.role !== "TA")) {
+      res.status(403).json({ error: "Only faculty or TAs can delete questions" });
       return;
     }
     
