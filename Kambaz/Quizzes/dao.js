@@ -258,11 +258,6 @@ export default function QuizzesDao() {
     addQuestion,
     updateQuestion,
     deleteQuestion,
-
-
-
-
-
     // Question Group functions
     addQuestionGroup,
     updateQuestionGroup,
