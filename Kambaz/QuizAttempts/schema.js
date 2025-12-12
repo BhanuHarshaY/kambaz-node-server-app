@@ -4,19 +4,22 @@ import mongoose from "mongoose";
 const answerSchema = new mongoose.Schema({
   questionId: String,
   questionType: String,
-  
-  // For MULTIPLE_CHOICE - the selected choice ID
+
+  // For MULTIPLE_CHOICE - single selection (legacy/single correct answer)
   selectedChoiceId: String,
-  
+
+  // For MULTIPLE_CHOICE - multiple selections (when multiple correct answers exist)
+  selectedChoiceIds: [String],
+
   // For TRUE_FALSE - true or false
   selectedAnswer: Boolean,
-  
+
   // For FILL_IN_BLANK - the text answer(s)
   textAnswers: [String],
-  
+
   // Whether this answer was correct
   isCorrect: { type: Boolean, default: false },
-  
+
   // Points earned for this question
   pointsEarned: { type: Number, default: 0 },
 }, { _id: false });
@@ -27,22 +30,22 @@ const quizAttemptSchema = new mongoose.Schema({
   quiz: { type: String, required: true },
   user: { type: String, required: true },
   course: { type: String, required: true },
-  
+
   // Attempt info
   attemptNumber: { type: Number, default: 1 },
-  
+
   // Timing
   startedAt: { type: Date, default: Date.now },
   submittedAt: Date,
-  
+
   // Answers
   answers: [answerSchema],
-  
+
   // Score
   score: { type: Number, default: 0 },
   totalPoints: { type: Number, default: 0 },
   percentage: { type: Number, default: 0 },
-  
+
   // Status
   status: {
     type: String,
@@ -50,7 +53,7 @@ const quizAttemptSchema = new mongoose.Schema({
     default: "IN_PROGRESS"
   },
 },
-{ collection: "quizattempts" }
+  { collection: "quizattempts" }
 );
 
 // Compound index to find attempts by user and quiz

@@ -17,22 +17,31 @@ const blankAnswerSchema = new mongoose.Schema({
 const questionSchema = new mongoose.Schema({
   _id: String,
   title: { type: String, default: "New Question" },
-  type: { 
-    type: String, 
+  type: {
+    type: String,
     enum: ["MULTIPLE_CHOICE", "TRUE_FALSE", "FILL_IN_BLANK"],
     default: "MULTIPLE_CHOICE"
   },
   points: { type: Number, default: 1 },
   question: { type: String, default: "" }, // The question text
-  
+
   // For MULTIPLE_CHOICE questions
   choices: [choiceSchema],
-  
+
   // For TRUE_FALSE questions
   correctAnswer: { type: Boolean, default: true }, // true = True is correct, false = False is correct
-  
+
   // For FILL_IN_BLANK questions - list of acceptable answers
   blankAnswers: [blankAnswerSchema],
+}, { _id: false });
+
+// Schema for question groups (Canvas-style)
+const questionGroupSchema = new mongoose.Schema({
+  _id: String,
+  name: { type: String, default: "Question Group" },
+  pickCount: { type: Number, default: null }, // null = use all questions, otherwise pick N random
+  pointsPerQuestion: { type: Number, default: 1 }, // Points for each question in group
+  questions: [questionSchema], // Questions within this group
 }, { _id: false });
 
 // Main Quiz schema
@@ -41,10 +50,10 @@ const quizSchema = new mongoose.Schema({
   title: { type: String, default: "Unnamed Quiz" },
   course: { type: String, required: true },
   description: { type: String, default: "" },
-  
+
   // Quiz settings
-  quizType: { 
-    type: String, 
+  quizType: {
+    type: String,
     enum: ["Graded Quiz", "Practice Quiz", "Graded Survey", "Ungraded Survey"],
     default: "Graded Quiz"
   },
@@ -53,15 +62,15 @@ const quizSchema = new mongoose.Schema({
     enum: ["Quizzes", "Exams", "Assignments", "Project"],
     default: "Quizzes"
   },
-  
+
   // Options
   shuffleAnswers: { type: Boolean, default: true },
   timeLimit: { type: Number, default: 20 }, // in minutes
   hasTimeLimit: { type: Boolean, default: true },
   multipleAttempts: { type: Boolean, default: false },
   howManyAttempts: { type: Number, default: 1 },
-  showCorrectAnswers: { 
-    type: String, 
+  showCorrectAnswers: {
+    type: String,
     enum: ["Immediately", "After Due Date", "Never"],
     default: "After Due Date"
   },
@@ -69,22 +78,25 @@ const quizSchema = new mongoose.Schema({
   oneQuestionAtATime: { type: Boolean, default: true },
   webcamRequired: { type: Boolean, default: false },
   lockQuestionsAfterAnswering: { type: Boolean, default: false },
-  
+
   // Dates
   dueDate: { type: String, default: "" },
   availableDate: { type: String, default: "" },
   untilDate: { type: String, default: "" },
-  
+
   // Publishing
   published: { type: Boolean, default: false },
-  
+
   // Questions embedded in quiz
   questions: [questionSchema],
-  
+
+  // Question groups (Canvas-style random question pools)
+  questionGroups: [questionGroupSchema],
+
   // Computed field (will be calculated)
   points: { type: Number, default: 0 },
 },
-{ collection: "quizzes" }
+  { collection: "quizzes" }
 );
 
 export default quizSchema;

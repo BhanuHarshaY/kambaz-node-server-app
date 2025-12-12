@@ -8,17 +8,21 @@ export default function QuizAttemptsDao() {
     return model.find({ user: userId, quiz: quizId }).sort({ attemptNumber: -1 });
   }
 
-  // Find the latest attempt for a user on a specific quiz
+  // Find the latest submitted attempt for a user on a specific quiz (excludes IN_PROGRESS)
   async function findLatestAttempt(userId, quizId) {
-    return model.findOne({ user: userId, quiz: quizId }).sort({ attemptNumber: -1 });
+    return model.findOne({
+      user: userId,
+      quiz: quizId,
+      status: { $ne: "IN_PROGRESS" }  // Only return submitted/timed out attempts
+    }).sort({ attemptNumber: -1 });
   }
 
   // Find an in-progress attempt
   async function findInProgressAttempt(userId, quizId) {
-    return model.findOne({ 
-      user: userId, 
-      quiz: quizId, 
-      status: "IN_PROGRESS" 
+    return model.findOne({
+      user: userId,
+      quiz: quizId,
+      status: "IN_PROGRESS"
     });
   }
 
@@ -31,7 +35,7 @@ export default function QuizAttemptsDao() {
   async function startAttempt(userId, quizId, courseId) {
     // Get the next attempt number
     const attemptCount = await getAttemptCount(userId, quizId);
-    
+
     const attempt = {
       _id: uuidv4(),
       user: userId,
@@ -42,7 +46,7 @@ export default function QuizAttemptsDao() {
       answers: [],
       status: "IN_PROGRESS",
     };
-    
+
     return model.create(attempt);
   }
 
@@ -50,40 +54,40 @@ export default function QuizAttemptsDao() {
   async function saveAnswer(attemptId, answer) {
     const attempt = await model.findOne({ _id: attemptId });
     if (!attempt) return null;
-    
+
     // Find if answer already exists for this question
     const existingIndex = attempt.answers.findIndex(
       a => a.questionId === answer.questionId
     );
-    
+
     if (existingIndex >= 0) {
       attempt.answers[existingIndex] = answer;
     } else {
       attempt.answers.push(answer);
     }
-    
+
     await attempt.save();
     return attempt;
   }
 
   // Submit the quiz attempt with grading
-async function submitAttempt(attemptId, gradedAnswers, score, totalPoints, status = "SUBMITTED") {
-  await model.updateOne(
-    { _id: attemptId },
-    { 
-      $set: { 
-        answers: gradedAnswers,
-        score,
-        totalPoints,
-        percentage: totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0,
-        submittedAt: new Date(),
-        status,
-      } 
-    }
-  );
-  // Return the updated attempt
-  return model.findOne({ _id: attemptId });
-}
+  async function submitAttempt(attemptId, gradedAnswers, score, totalPoints, status = "SUBMITTED") {
+    await model.updateOne(
+      { _id: attemptId },
+      {
+        $set: {
+          answers: gradedAnswers,
+          score,
+          totalPoints,
+          percentage: totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0,
+          submittedAt: new Date(),
+          status,
+        }
+      }
+    );
+    // Return the updated attempt
+    return model.findOne({ _id: attemptId });
+  }
 
   // Find attempt by ID
   async function findAttemptById(attemptId) {
